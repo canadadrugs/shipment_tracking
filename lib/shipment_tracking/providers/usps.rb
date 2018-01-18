@@ -71,6 +71,10 @@ module ShipmentTracking
           HistoryEntry.new(date: date, code: code, description: history_text)
         end
 
+        # If something was refused it will still be in progress for the return shipment, but we want it to be marked as
+        # failed immediately.
+        status = DeliveryStatus::FAILED if history.any?{|h| h.code == 'Refused'}
+
         return Shipment.new(lookup_succeeded: true, delivery_status: status, history: history + additional_history_entries)
       end
 
